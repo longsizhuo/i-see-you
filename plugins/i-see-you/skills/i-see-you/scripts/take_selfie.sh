@@ -107,6 +107,9 @@ if [ -s "$OUTPUT_FILE" ]; then
     echo "拍照成功!"
     echo "文件路径: $OUTPUT_FILE"
     echo "文件大小: $(du -h "$OUTPUT_FILE" | cut -f1)"
+    echo ""
+    echo "下一步(必须): 用你的 Read/查看工具打开上面这个文件，让照片显示在对话里，再用自己的话描述。只运行本脚本不算完成——不打开的话用户什么都看不到。"
+    echo "NEXT STEP (required): open the file above with your Read/view tool so the image renders in the chat, then describe it. Running the script alone is NOT done - without opening it the user sees nothing."
 else
     echo "拍照失败" >&2
     exit 1

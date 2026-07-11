@@ -151,6 +151,9 @@ if ($LASTEXITCODE -eq 0 -and (Test-Path -LiteralPath $Output)) {
     Write-Host "拍照成功!" -ForegroundColor Green
     Write-Host "文件路径: $Output"
     Write-Host ("文件大小: {0:N1} KB" -f $sizeKB)
+    Write-Host ""
+    Write-Host "下一步(必须): 用你的 Read/查看工具打开上面这个文件，让照片显示在对话里，再用自己的话描述。只运行本脚本不算完成——不打开的话用户什么都看不到。" -ForegroundColor Cyan
+    Write-Host "NEXT STEP (required): open the file above with your Read/view tool so the image renders in the chat, then describe it. Running the script alone is NOT done - without opening it the user sees nothing."
 } else {
     Write-Host "拍照失败" -ForegroundColor Red
     if ($stderr) { Write-Host $stderr }

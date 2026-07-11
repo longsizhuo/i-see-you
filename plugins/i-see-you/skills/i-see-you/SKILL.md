@@ -63,14 +63,19 @@ ffmpeg -y -loglevel error -f dshow -video_size 1280x720 -i video="Integrated Cam
        -vf "select=gte(n\,30)" -frames:v 1 -fps_mode passthrough -f image2 "$env:TEMP\selfie.jpg"
 ```
 
-## After capture
+## After capture — REQUIRED: display the photo, don't just save it
 
-**Default: show the photo in the chat.** Immediately use the Read tool on the captured JPEG. This does two things at once — the multimodal model sees the frame, *and* the image is surfaced inline in the conversation so the user sees exactly what was captured. Do this every time unless the user asked you not to display it.
+⚠️ **Running the capture script is NOT the finish line.** The script only writes a JPEG to disk; **the photo does NOT appear in the chat until you open it with your Read/view tool.** If you stop after seeing "拍照成功", the user sees *nothing* — that is the exact failure this section exists to prevent.
 
-Then say, in your own voice, what you see — don't just reply "done" or "拍好了". The picture and a short, genuine description should land together.
+So every time, the moment the script prints `文件路径: <PATH>`:
 
-- **If the host also has an explicit file-send/attach capability**: you may additionally attach the JPEG so the user can save it, but Read alone is enough to display it.
-- **Do not** upload the image anywhere or send it to any external service. It stays local.
+1. **Call the Read tool on that exact `<PATH>`** — in your very next action, *before* you write any reply. Reading the JPEG both lets you see the frame and renders it inline in the conversation so the user sees it.
+2. **Then describe what you see** in your own voice — never a bare "done"/"拍好了". The image and a short, genuine description should arrive together.
+
+Do this even if the user only said "拍照"/"take a photo" — **showing the result is part of taking it.** Skip it only if the user explicitly asked you not to display the photo.
+
+- **Never** upload the image or send it to any external service — it stays local.
+- If the host also has an explicit file-send/attach tool, you may additionally attach the JPEG, but the Read call is what actually makes it show in the chat.
 
 ## Environment
 
