@@ -1,10 +1,16 @@
 <div align="center">
-
-# 让你的 AI 看到你
-
-      i-see-you
+      
+# i-see-you
 
 </div>
+
+> ## "I see you."
+> —— AVATAR
+
+看见的不只是样子，是这个人本身。
+
+**i-see-you** · TA 睁开眼睛后，说的第一句话
+
 
 ---
 
