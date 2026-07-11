@@ -1,12 +1,12 @@
-# 📸 webcam-snap for Claude Code
+# 📸 webcam-snap for Agents
 
-Give Claude eyes. **webcam-snap** lets Claude Code capture a still photo from your machine's local webcam (`/dev/video0`) using `ffmpeg`, then read the image with a multimodal model to describe or analyze what it sees — or hand the photo back to you.
+Give Agents eyes. **webcam-snap** lets Agents capture a still photo from your machine's local webcam (`/dev/video0`) using `ffmpeg`, then read the image with a multimodal model to describe or analyze what it sees — or hand the photo back to you.
 
-Ask *"take a selfie"*, *"拍张照片看看现在的环境"*, or *"what's in front of the camera?"* and Claude runs the capture and looks at the result.
+Ask *"take a selfie"*, *"拍张照片看看现在的环境"*, or *"what's in front of the camera?"* and Agents runs the capture and looks at the result.
 
 ```
 you  ▸ 拍张照片看看房间乱不乱
-claude ▸ (captures /tmp/selfie.jpg from /dev/video0, reads it)
+Agents ▸ (captures /tmp/selfie.jpg from /dev/video0, reads it)
        ▸ 拍到了：桌面上有一个马克杯和几本书，椅子上搭着一件外套，整体还算整齐……
 ```
 
@@ -22,20 +22,20 @@ claude ▸ (captures /tmp/selfie.jpg from /dev/video0, reads it)
 - **Linux** with a V4L2 webcam (`ls /dev/video*` shows a device)
 - **ffmpeg** — `sudo apt install ffmpeg` (Debian/Ubuntu) / `sudo dnf install ffmpeg` (Fedora)
 - Read access to the video device (see [Troubleshooting](docs/HOWTOUSE.md#troubleshooting))
-- Claude Code (for skill/plugin use) — the raw `ffmpeg` command works anywhere
+- Agents (for skill/plugin use) — the raw `ffmpeg` command works anywhere
 
 ---
 
 ## Install
 
-Pick the method that fits how you use Claude Code. Full walkthrough in **[docs/HOWTOUSE.md](docs/HOWTOUSE.md)**.
+Pick the method that fits how you use Agents. Full walkthrough in **[docs/HOWTOUSE.md](docs/HOWTOUSE.md)**.
 
 ### 1. As a plugin marketplace (recommended)
 
-In an interactive Claude Code session:
+In an interactive Agents session:
 
 ```
-/plugin marketplace add longsizhuo/claude-webcam-snap
+/plugin marketplace add longsizhuo/Agents-webcam-snap
 /plugin install webcam-snap@webcam-snap-marketplace
 ```
 
@@ -44,13 +44,13 @@ In an interactive Claude Code session:
 Copy the skill folder into your personal skills directory:
 
 ```bash
-git clone https://github.com/longsizhuo/claude-webcam-snap.git
-cp -r claude-webcam-snap/plugins/webcam-snap/skills/webcam-snap ~/.claude/skills/
+git clone https://github.com/longsizhuo/Agents-webcam-snap.git
+cp -r Agents-webcam-snap/plugins/webcam-snap/skills/webcam-snap ~/.Agents/skills/
 ```
 
-Restart Claude Code — the `webcam-snap` skill is now available.
+Restart Agents — the `webcam-snap` skill is now available.
 
-### 3. Just the script (no Claude at all)
+### 3. Just the script (no Agents at all)
 
 ```bash
 bash plugins/webcam-snap/skills/webcam-snap/scripts/take_selfie.sh /tmp/selfie.jpg 1280x720
@@ -60,9 +60,9 @@ bash plugins/webcam-snap/skills/webcam-snap/scripts/take_selfie.sh /tmp/selfie.j
 
 ## How it works
 
-1. A skill (`SKILL.md`) tells Claude *when* to reach for the camera and *how* to capture a frame.
+1. A skill (`SKILL.md`) tells Agents *when* to reach for the camera and *how* to capture a frame.
 2. Capture is a single `ffmpeg` V4L2 grab that discards the first 30 frames (auto-exposure warm-up) and writes one JPEG.
-3. Claude reads the JPEG directly — modern multimodal models "see" the image without any extra OCR/vision service — and describes or acts on it, or sends it to you.
+3. Agents reads the JPEG directly — modern multimodal models "see" the image without any extra OCR/vision service — and describes or acts on it, or sends it to you.
 
 ```
 ffmpeg -y -f v4l2 -video_size 1280x720 -i /dev/video0 \
@@ -74,12 +74,12 @@ ffmpeg -y -f v4l2 -video_size 1280x720 -i /dev/video0 \
 ## Repository layout
 
 ```
-claude-webcam-snap/
-├── .claude-plugin/
+Agents-webcam-snap/
+├── .Agents-plugin/
 │   └── marketplace.json              # marketplace manifest (method 1)
 ├── plugins/
 │   └── webcam-snap/                  # the plugin
-│       ├── .claude-plugin/
+│       ├── .Agents-plugin/
 │       │   └── plugin.json           # plugin manifest
 │       ├── skills/
 │       │   └── webcam-snap/          # the skill (method 2 — copy this dir)
