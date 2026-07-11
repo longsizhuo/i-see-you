@@ -75,7 +75,7 @@ Then say, in your own voice, what you see — don't just reply "done" or "拍好
 - **Dependency**: `ffmpeg` on `PATH`.
   - Linux: `sudo apt install ffmpeg` (Debian/Ubuntu) / `sudo dnf install ffmpeg` (Fedora)
   - macOS: `brew install ffmpeg`
-  - Windows: `winget install --id Gyan.FFmpeg` (or `scoop install ffmpeg` / `choco install ffmpeg`), then reopen the terminal so `PATH` refreshes.
+  - Windows: `winget install --id Gyan.FFmpeg` (or `scoop install ffmpeg` / `choco install ffmpeg`). **No need to reopen the terminal** — just re-run `take_selfie.ps1`; it refreshes `PATH` from the registry and searches common install dirs itself, so a same-session retry works.
 - **Permissions**:
   - Linux: the user must be able to read the video device; if not, add them to the `video` group.
   - macOS: grant the terminal app camera access (System Settings → Privacy & Security → Camera).
@@ -85,7 +85,9 @@ Then say, in your own voice, what you see — don't just reply "done" or "拍好
 
 | Symptom | Fix |
 |---------|-----|
-| `ffmpeg: command not found` / not recognized | Install ffmpeg (see above); on Windows reopen the terminal afterward. |
+| `ffmpeg: command not found` / not recognized | Install ffmpeg (see above). On Windows just **re-run `take_selfie.ps1`** after installing — it self-heals `PATH` from the registry; you do **not** need to reopen the terminal. |
+| Device name has spaces (e.g. `HP 5MP Camera`) | Pass it through the script: `take_selfie.ps1 -Device "HP 5MP Camera"`. **Stay in PowerShell** — do not switch to `cmd` or a `.bat`; that only mangles the quoting. The script quotes the device correctly for you. |
+| Auto-detect picked the wrong camera (e.g. a virtual/OBS cam) | List devices (`ffmpeg -f dshow -list_devices true -i dummy`) and pass the real one with `-Device "…"`. Inactive virtual cams show as `(none)` and are skipped; an *active* one may be picked first. |
 | Permission denied (Linux) | `sudo usermod -a -G video $USER` (re-login), or temporarily `sudo chmod 666 /dev/video0`. |
 | No device / device busy | Close any app holding the camera (Zoom/Teams/Camera). List devices: Linux `v4l2-ctl --list-devices`; macOS `ffmpeg -f avfoundation -list_devices true -i ""`; Windows `ffmpeg -f dshow -list_devices true -i dummy`. |
 | Requested resolution rejected | Omit `-video_size` (scripts auto-fall-back), or query modes (Windows: `ffmpeg -f dshow -list_options true -i video="NAME"`). |

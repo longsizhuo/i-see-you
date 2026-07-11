@@ -19,11 +19,46 @@ if ([string]::IsNullOrWhiteSpace($Output)) {
     $Output = Join-Path $env:TEMP "selfie_$ts.jpg"
 }
 
-# 检查 ffmpeg 是否已安装
-$ff = Get-Command ffmpeg -ErrorAction SilentlyContinue
-if (-not $ff) {
+# 解析 ffmpeg 可执行文件。刚用 winget/choco 装完时，当前终端会话的 PATH 不会自动更新，
+# 直接重跑还是会“找不到”。这里做自愈：先查 PATH -> 从注册表刷新 PATH -> 搜常见安装目录，
+# 从而无需重开终端即可用上刚装好的 ffmpeg。
+function Resolve-Ffmpeg {
+    $cmd = Get-Command ffmpeg -ErrorAction SilentlyContinue
+    if ($cmd) { return $cmd.Source }
+
+    # 1) 从注册表重新加载 PATH（机器级 + 用户级），应对“刚装完但没重开终端”
+    $machine = [System.Environment]::GetEnvironmentVariable('Path', 'Machine')
+    $user    = [System.Environment]::GetEnvironmentVariable('Path', 'User')
+    $env:PATH = (@($machine, $user) | Where-Object { $_ }) -join ';'
+    $cmd = Get-Command ffmpeg -ErrorAction SilentlyContinue
+    if ($cmd) { return $cmd.Source }
+
+    # 2) 搜常见安装位置（winget / scoop / choco）
+    $candidates = @(
+        (Join-Path $env:LOCALAPPDATA 'Microsoft\WinGet\Links\ffmpeg.exe'),
+        (Join-Path $env:USERPROFILE 'scoop\shims\ffmpeg.exe'),
+        (Join-Path $env:ProgramData 'chocolatey\bin\ffmpeg.exe')
+    )
+    $wingetPkgs = Join-Path $env:LOCALAPPDATA 'Microsoft\WinGet\Packages'
+    if (Test-Path $wingetPkgs) {
+        $candidates += Get-ChildItem $wingetPkgs -Recurse -Filter ffmpeg.exe -ErrorAction SilentlyContinue |
+            Select-Object -ExpandProperty FullName
+    }
+    foreach ($c in $candidates) {
+        if ($c -and (Test-Path $c)) {
+            # 把它所在目录加到本会话 PATH，后续直接用 ffmpeg 即可
+            $env:PATH = (Split-Path $c) + ';' + $env:PATH
+            return $c
+        }
+    }
+    return $null
+}
+
+$ffPath = Resolve-Ffmpeg
+if (-not $ffPath) {
     Write-Host "错误: 未找到 ffmpeg。" -ForegroundColor Red
-    Write-Host "请先安装：winget install --id Gyan.FFmpeg （或 scoop install ffmpeg / choco install ffmpeg），然后重新打开终端。"
+    Write-Host "请安装后重试：winget install --id Gyan.FFmpeg （或 scoop install ffmpeg / choco install ffmpeg）。"
+    Write-Host "提示：装完直接重跑本脚本即可——脚本会自动从注册表刷新 PATH 并搜索常见安装目录，通常无需重开终端。"
     exit 1
 }
 
